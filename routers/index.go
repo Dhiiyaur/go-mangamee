@@ -26,7 +26,7 @@ func Index() *echo.Echo {
 
 	e.GET("/browse", func(c echo.Context) error {
 
-		params := c.QueryParam("page")
+		params := c.QueryParam("pageNumber")
 		data := models.BrowsePopularManga(params)
 		return c.JSON(http.StatusOK, data)
 	})
