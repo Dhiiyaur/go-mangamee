@@ -14,7 +14,11 @@ func Index() *echo.Echo {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"https://127.0.0.1"},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "MangameeApi")

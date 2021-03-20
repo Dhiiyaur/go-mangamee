@@ -77,7 +77,7 @@ func EnMangaName(title string) (interface{}, error) {
 
 			MangaLink := strings.Split(h.ChildAttr(`a`, "href"), "/")[4]
 			MangaTitle := h.ChildText("h4 a")
-			MangaChapter := strings.Split(h.ChildText("p"), "published")[0]
+			MangaChapter := strings.Split(strings.Split(h.ChildText("p"), "published")[0], " ")[0]
 			MangaStatus := strings.Split(strings.Split(h.ChildText("p"), "(")[1], ")")[0]
 
 			result := Manga{
