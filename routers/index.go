@@ -2,6 +2,7 @@ package routers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/dhiiyaur/go-mangamee/models"
 	"github.com/labstack/echo/v4"
@@ -33,8 +34,11 @@ func Index() *echo.Echo {
 
 	e.GET("/search", func(c echo.Context) error {
 
-		title := c.QueryParam("mangaTitle")
+		title := strings.Replace(c.QueryParam("mangaTitle"), " ", "%20", -1)
 		lang := c.QueryParam("lang")
+		// fmt.Println(strings.Replace(title, " ", "%20", -1))
+		// title = strings.Replace(title, " ", "%20", -1)
+
 		if lang == "EN" {
 
 			data, err := models.EnMangaName(title)
