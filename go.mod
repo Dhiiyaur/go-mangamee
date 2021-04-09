@@ -14,4 +14,5 @@ require (
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	firebase.google.com/go v3.13.0+incompatible
 )
