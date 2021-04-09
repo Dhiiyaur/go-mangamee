@@ -1,1 +1,1 @@
-web: go-mangamee
+web: go-mangamee/cmd/web

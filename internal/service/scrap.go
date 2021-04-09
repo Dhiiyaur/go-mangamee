@@ -1,10 +1,11 @@
-package models
+package service
 
 import (
 	"errors"
 	"strconv"
 	"strings"
 
+	"github.com/dhiiyaur/go-mangamee/internal/models"
 	"github.com/gocolly/colly"
 )
 
@@ -12,25 +13,16 @@ import (
 
 func BrowsePopularManga(page string) interface{} {
 
-	type Manga struct {
-		MangaCover string `json:"MangaCover"`
-		MangaLink  string `json:"MangaLink"`
-		MangaTitle string `json:"MangaTitle"`
-	}
-
-	type Mangas []Manga
-
-	var DataMangas Mangas
+	DataMangas := []models.MangaData{}
 
 	c := colly.NewCollector()
-
 	c.OnHTML(".media-left", func(e *colly.HTMLElement) {
 
 		MangaCover := e.ChildAttr("a img", "src")
 		MangaLink := strings.Split(e.ChildAttr(`a`, "href"), "/")[4]
 		MangaTitle := strings.Split(strings.Replace(strings.Split(e.ChildAttr(`a`, "href"), "/")[4], "-", " ", -1), "_")[0]
 
-		result := Manga{
+		result := models.MangaData{
 
 			MangaCover: MangaCover,
 			MangaLink:  MangaLink,
@@ -49,20 +41,9 @@ func BrowsePopularManga(page string) interface{} {
 
 func EnMangaName(title string) (interface{}, error) {
 
-	type Manga struct {
-		MangaCover   string `json:"MangaCover"`
-		MangaLink    string `json:"MangaLink"`
-		MangaTitle   string `json:"MangaTitle"`
-		MangaChapter string `json:"MangaChapter"`
-		MangaStatus  string `json:"MangaStatus"`
-	}
-
-	type Mangas []Manga
-
-	var DataMangas Mangas
+	DataMangas := []models.MangaData{}
 
 	c := colly.NewCollector()
-
 	c.OnHTML(".media-manga", func(h *colly.HTMLElement) {
 
 		MangaCover := "temp"
@@ -80,7 +61,7 @@ func EnMangaName(title string) (interface{}, error) {
 			MangaChapter := strings.Split(strings.Split(h.ChildText("p"), "published")[0], " ")[0]
 			MangaStatus := strings.Split(strings.Split(h.ChildText("p"), "(")[1], ")")[0]
 
-			result := Manga{
+			result := models.MangaData{
 
 				MangaCover:   MangaCover,
 				MangaLink:    MangaLink,
@@ -107,20 +88,7 @@ func EnMangaName(title string) (interface{}, error) {
 
 func EnMangaChapter(title string) (interface{}, error) {
 
-	type Chapter struct {
-		ChapterLink string `json:"ChapterLink"`
-		ChapterName string `json:"ChapterName"`
-	}
-
-	type Chapters []Chapter
-
-	type MangaData struct {
-		CoverImage string   `json:"CoverImage"`
-		Summary    string   `json:"Summary"`
-		Chapter    Chapters `json:"Chapter"`
-	}
-	var MangaChapter Chapters
-
+	mangaChapter := []models.Chapter{}
 	var coverImage, summary string
 
 	c := colly.NewCollector()
@@ -129,12 +97,13 @@ func EnMangaChapter(title string) (interface{}, error) {
 		ChapterLink := strings.Split(e.Attr("href"), "/")[5]
 		ChapterName := strings.Split(e.Attr("href"), "/")[5]
 
-		result := Chapter{
+		result := models.Chapter{
 
 			ChapterName: ChapterName,
 			ChapterLink: ChapterLink,
 		}
-		MangaChapter = append(MangaChapter, result)
+
+		mangaChapter = append(mangaChapter, result)
 
 	})
 
@@ -152,36 +121,27 @@ func EnMangaChapter(title string) (interface{}, error) {
 
 	c.Visit("https://mangahub.io/manga/" + title)
 
-	data := MangaData{
+	DataMangas := models.MangaData{
 
-		CoverImage: coverImage,
+		MangaCover: coverImage,
 		Summary:    summary,
-		Chapter:    MangaChapter,
+		Chapter:    mangaChapter,
 	}
 
-	if len(MangaChapter) == 0 {
+	if len(mangaChapter) == 0 {
 
 		return "", errors.New("empty")
 
 	}
-	return data, nil
+
+	return DataMangas, nil
 
 }
 
 func EnMangaImage(title string, chapter string) interface{} {
 
-	type Image struct {
-		Image string `json:"Image"`
-	}
-
-	type Images []Image
-
-	type MangaData struct {
-		Image Images `json:"Image"`
-	}
-
 	var link, frond, end string
-	var MangaImage Images
+	mangaImage := []models.Image{}
 
 	c := colly.NewCollector()
 	c.OnHTML(".PB0mN", func(e *colly.HTMLElement) {
@@ -199,41 +159,29 @@ func EnMangaImage(title string, chapter string) interface{} {
 	for i := 1; i < 150; i++ {
 
 		data := frond + "/" + strconv.Itoa(i) + "." + end
-		tempImage := Image{
+		tempImage := models.Image{
 
 			Image: data,
 		}
-
-		MangaImage = append(MangaImage, tempImage)
+		mangaImage = append(mangaImage, tempImage)
 
 	}
 
-	data := MangaData{
+	DataMangas := models.MangaData{
 
-		Image: MangaImage,
+		Images: mangaImage,
 	}
 
-	return data
+	return DataMangas
 }
 
 // IND ------------------------------------------------------------------------------------------
 
 func IDMangaName(title string) (interface{}, error) {
 
-	type Manga struct {
-		MangaCover   string `json:"MangaCover"`
-		MangaLink    string `json:"MangaLink"`
-		MangaTitle   string `json:"MangaTitle"`
-		MangaChapter string `json:"MangaChapter"`
-		MangaStatus  string `json:"MangaStatus"`
-	}
-
-	type Mangas []Manga
-
-	var DataMangas Mangas
+	DataMangas := []models.MangaData{}
 
 	c := colly.NewCollector()
-
 	c.OnHTML(".flexbox2-content", func(e *colly.HTMLElement) {
 
 		MangaLink := strings.Split(e.ChildAttr(`a`, "href"), "/")[4]
@@ -249,13 +197,12 @@ func IDMangaName(title string) (interface{}, error) {
 			MangaCover := h.ChildAttr(`img`, "src")
 			MangaTitle := h.ChildAttr(`img`, "title")
 
-			result := Manga{
+			result := models.MangaData{
 
 				MangaCover:   MangaCover,
 				MangaLink:    MangaLink,
 				MangaTitle:   MangaTitle,
 				MangaChapter: MangaChapter,
-				MangaStatus:  "-",
 			}
 
 			DataMangas = append(DataMangas, result)
@@ -276,22 +223,8 @@ func IDMangaName(title string) (interface{}, error) {
 
 func IDMangaChapter(title string) (interface{}, error) {
 
-	type Chapter struct {
-		ChapterLink string `json:"ChapterLink"`
-		ChapterName string `json:"ChapterName"`
-	}
-
-	type Chapters []Chapter
-
-	type MangaData struct {
-		CoverImage string   `json:"CoverImage"`
-		Summary    string   `json:"Summary"`
-		Chapter    Chapters `json:"Chapter"`
-	}
-
-	var MangaChapter Chapters
-
 	var coverImage, summary string
+	mangaChapter := []models.Chapter{}
 
 	c := colly.NewCollector()
 
@@ -311,63 +244,54 @@ func IDMangaChapter(title string) (interface{}, error) {
 		ChapterName := e.ChildAttr(`a`, "title")
 		ChapterLink := strings.Split(e.ChildAttr(`a`, "href"), "/")[3]
 
-		result := Chapter{
+		result := models.Chapter{
 
 			ChapterName: ChapterName,
 			ChapterLink: ChapterLink,
 		}
-		MangaChapter = append(MangaChapter, result)
+		mangaChapter = append(mangaChapter, result)
 
 	})
 	c.Visit("https://www.maid.my.id/manga/" + title + "/")
 
-	data := MangaData{
+	DataMangas := models.MangaData{
 
-		CoverImage: coverImage,
+		MangaCover: coverImage,
 		Summary:    summary,
-		Chapter:    MangaChapter,
+		Chapter:    mangaChapter,
 	}
 
-	if len(MangaChapter) == 0 {
+	if len(mangaChapter) == 0 {
 
 		return "", errors.New("empty")
 
 	}
-	return data, nil
+	return DataMangas, nil
 }
 
 func IDMangaImage(chapter string) interface{} {
 
-	type Image struct {
-		Image string `json:"Image"`
-	}
-
-	type Images []Image
-
-	type MangaData struct {
-		Image Images `json:"Image"`
-	}
-
-	var MangaImage Images
+	mangaImage := []models.Image{}
 
 	c := colly.NewCollector()
 	c.OnHTML(".reader-area img", func(e *colly.HTMLElement) {
 
 		data := e.Attr("src")
-		tempImage := Image{
+		tempImage := models.Image{
 
 			Image: data,
 		}
 
-		MangaImage = append(MangaImage, tempImage)
+		mangaImage = append(mangaImage, tempImage)
 
 	})
 
 	c.Visit("https://www.maid.my.id/" + chapter + "/")
 
-	data := MangaData{
-		Image: MangaImage,
+	DataMangas := models.MangaData{
+
+		Images: mangaImage,
 	}
 
-	return data
+	return DataMangas
 }
