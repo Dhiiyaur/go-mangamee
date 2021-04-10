@@ -5,11 +5,14 @@ import (
 	"os"
 
 	"github.com/dhiiyaur/go-mangamee/internal/controller"
+	"github.com/dhiiyaur/go-mangamee/internal/db"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func Start() {
+
+	db.InitDb()
 
 	e := echo.New()
 
@@ -32,6 +35,10 @@ func Start() {
 
 	e.POST("/user/login", controller.Login)
 	e.POST("/user/register", controller.Register)
+
+	e.GET("/user/gethistory", controller.GetHistory)
+	e.POST("/user/deletehistory", controller.DeleteHistory)
+	e.POST("/user/createhistory", controller.CreateHistory)
 
 	e.Start(":" + os.Getenv("PORT"))
 }
