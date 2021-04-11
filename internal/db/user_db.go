@@ -39,7 +39,7 @@ func CreateUser(user models.User) (models.User, error) {
 	return user, nil
 }
 
-// MangaHistory
+// MangaHistory ---------------------------------------------------------------------
 
 func GetUserHistory(username string) ([]models.UserHistory, error) {
 
@@ -51,7 +51,7 @@ func GetUserHistory(username string) ([]models.UserHistory, error) {
 	dbUserHistoryRef := dbUsersHistoryRef.Child(username)
 	dbUserHistoryRef.Get(context.Background(), &tempUserHistorys)
 
-	// fmt.Println(tempUserHistorys)
+	fmt.Println(tempUserHistorys)
 	for _, tempUserHistory := range tempUserHistorys {
 
 		// fmt.Println(tempUserHistory)
@@ -61,8 +61,6 @@ func GetUserHistory(username string) ([]models.UserHistory, error) {
 	return userHistory, nil
 
 }
-
-// down
 
 func CreateUserHistory(username string, ReqHistory models.UserHistory) error {
 
@@ -80,17 +78,4 @@ func DeleteUserHistory(username string, mangaID string) error {
 	fmt.Println(err)
 
 	return nil
-}
-
-func UpdateUserHistory(username string) (interface{}, error) {
-
-	history := []string{"heelo", "world", "nihao", "gutentag"}
-
-	dbUsersHistoryRef := ConDB().FbUsersHistoryRef
-	dbUserHistoryRef := dbUsersHistoryRef.Child(username)
-
-	dbUserHistoryRef.Set(context.Background(), history)
-
-	return history, nil
-
 }

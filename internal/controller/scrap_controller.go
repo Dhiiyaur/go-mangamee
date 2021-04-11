@@ -11,7 +11,12 @@ import (
 func Browse(c echo.Context) error {
 
 	params := c.QueryParam("pageNumber")
-	data := service.BrowsePopularManga(params)
+	data, err := service.BrowsePopularManga(params)
+	if err != nil {
+
+		return c.JSON(http.StatusBadRequest, err)
+
+	}
 
 	return c.JSON(http.StatusOK, data)
 }
@@ -25,7 +30,7 @@ func Search(c echo.Context) error {
 
 		data, err := service.EnMangaName(title)
 		if err != nil {
-			// log.Fatal(err)
+
 			return c.JSON(http.StatusBadRequest, err)
 
 		}
@@ -36,7 +41,7 @@ func Search(c echo.Context) error {
 
 		data, err := service.IDMangaName(title)
 		if err != nil {
-			// log.Fatal(err)
+
 			return c.JSON(http.StatusBadRequest, err)
 
 		}
@@ -54,7 +59,7 @@ func Manga(c echo.Context) error {
 
 		data, err := service.EnMangaChapter(title)
 		if err != nil {
-			// log.Fatal(err)
+
 			return c.JSON(http.StatusBadRequest, err)
 
 		}
@@ -64,7 +69,7 @@ func Manga(c echo.Context) error {
 	} else {
 		data, err := service.IDMangaChapter(title)
 		if err != nil {
-			// log.Fatal(err)
+
 			return c.JSON(http.StatusBadRequest, err)
 
 		}
@@ -82,12 +87,22 @@ func Page(c echo.Context) error {
 
 	if lang == "EN" {
 
-		data := service.EnMangaImage(title, chapter)
+		data, err := service.EnMangaImage(title, chapter)
+		if err != nil {
+
+			return c.JSON(http.StatusBadRequest, err)
+
+		}
 		return c.JSON(http.StatusOK, data)
 
 	} else {
 
-		data := service.IDMangaImage(chapter)
+		data, err := service.IDMangaImage(chapter)
+		if err != nil {
+
+			return c.JSON(http.StatusBadRequest, err)
+
+		}
 		return c.JSON(http.StatusOK, data)
 	}
 }

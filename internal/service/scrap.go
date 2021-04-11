@@ -11,7 +11,7 @@ import (
 
 // EN ------------------------------------------------------------------------------------------
 
-func BrowsePopularManga(page string) interface{} {
+func BrowsePopularManga(page string) ([]models.MangaData, error) {
 
 	DataMangas := []models.MangaData{}
 
@@ -35,11 +35,16 @@ func BrowsePopularManga(page string) interface{} {
 
 	c.Visit("https://mangahub.io/popular/page/" + page + "/")
 
-	return DataMangas
+	if len(DataMangas) == 0 {
+
+		return DataMangas, errors.New("empty")
+	}
+
+	return DataMangas, nil
 
 }
 
-func EnMangaName(title string) (interface{}, error) {
+func EnMangaName(title string) ([]models.MangaData, error) {
 
 	DataMangas := []models.MangaData{}
 
@@ -80,13 +85,13 @@ func EnMangaName(title string) (interface{}, error) {
 
 	if len(DataMangas) == 0 {
 
-		return "", errors.New("empty")
+		return DataMangas, errors.New("empty")
 	}
 
 	return DataMangas, nil
 }
 
-func EnMangaChapter(title string) (interface{}, error) {
+func EnMangaChapter(title string) (models.MangaData, error) {
 
 	mangaChapter := []models.Chapter{}
 	var coverImage, summary string
@@ -130,7 +135,7 @@ func EnMangaChapter(title string) (interface{}, error) {
 
 	if len(mangaChapter) == 0 {
 
-		return "", errors.New("empty")
+		return DataMangas, errors.New("empty")
 
 	}
 
@@ -138,7 +143,7 @@ func EnMangaChapter(title string) (interface{}, error) {
 
 }
 
-func EnMangaImage(title string, chapter string) interface{} {
+func EnMangaImage(title string, chapter string) (models.MangaData, error) {
 
 	var link, frond, end string
 	mangaImage := []models.Image{}
@@ -172,12 +177,18 @@ func EnMangaImage(title string, chapter string) interface{} {
 		Images: mangaImage,
 	}
 
-	return DataMangas
+	if len(mangaImage) == 0 {
+
+		return DataMangas, errors.New("empty")
+
+	}
+
+	return DataMangas, nil
 }
 
 // IND ------------------------------------------------------------------------------------------
 
-func IDMangaName(title string) (interface{}, error) {
+func IDMangaName(title string) ([]models.MangaData, error) {
 
 	DataMangas := []models.MangaData{}
 
@@ -215,13 +226,13 @@ func IDMangaName(title string) (interface{}, error) {
 
 	if len(DataMangas) == 0 {
 
-		return "", errors.New("empty")
+		return DataMangas, errors.New("empty")
 	}
 
 	return DataMangas, nil
 }
 
-func IDMangaChapter(title string) (interface{}, error) {
+func IDMangaChapter(title string) (models.MangaData, error) {
 
 	var coverImage, summary string
 	mangaChapter := []models.Chapter{}
@@ -263,13 +274,13 @@ func IDMangaChapter(title string) (interface{}, error) {
 
 	if len(mangaChapter) == 0 {
 
-		return "", errors.New("empty")
+		return DataMangas, errors.New("empty")
 
 	}
 	return DataMangas, nil
 }
 
-func IDMangaImage(chapter string) interface{} {
+func IDMangaImage(chapter string) (models.MangaData, error) {
 
 	mangaImage := []models.Image{}
 
@@ -293,5 +304,11 @@ func IDMangaImage(chapter string) interface{} {
 		Images: mangaImage,
 	}
 
-	return DataMangas
+	if len(mangaImage) == 0 {
+
+		return DataMangas, errors.New("empty")
+
+	}
+
+	return DataMangas, nil
 }

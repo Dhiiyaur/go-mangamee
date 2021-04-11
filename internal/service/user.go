@@ -105,8 +105,6 @@ func GetHistory(username string) ([]models.UserHistory, error) {
 	return result, nil
 }
 
-// dbawah belum
-
 func DeleteHistory(username string, ReqUser models.UserHistory) error {
 
 	err := db.DeleteUserHistory(username, ReqUser.ID)
@@ -122,12 +120,6 @@ func DeleteHistory(username string, ReqUser models.UserHistory) error {
 func CreateHistory(username string, ReqHistory models.UserHistory) error {
 
 	db.CreateUserHistory(username, ReqHistory)
-
-	// if err != nil {
-
-	// 	log.Errorf(context.Background(), "Empty %v", err)
-	// 	return err
-	// }
 
 	return nil
 
